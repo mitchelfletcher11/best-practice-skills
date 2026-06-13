@@ -1,0 +1,12 @@
+{
+  "_comment": "Merge this UserPromptSubmit hook into your ~/.claude/settings.json. It runs check-best-practice.sh on every prompt; the script emits a one-line reminder to run /best-practice-claude (and /best-practice-skills) at most once per 24h.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash ~/.claude/scripts/check-best-practice.sh" }
+        ]
+      }
+    ]
+  }
+}
