@@ -1,5 +1,10 @@
 # Setup — best-practice-skills
 
+> **You don't have to follow this by hand.** On first run the skill's **Step 0
+> Preflight detects what's missing and offers to set it up for you** — with a
+> security warning and your explicit confirmation before it writes the script or
+> wires the hook. This file is the manual / reference path.
+
 Three machine-specific pieces: the **trigger script**, the **settings hook**, and
 (optional) the **auto-commit to *your own* private dotfiles repo**.
 

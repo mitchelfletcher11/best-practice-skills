@@ -15,6 +15,52 @@ Daily global sweep that reviews skills against accumulated observations and sess
 
 ---
 
+## Step 0 — Preflight: self-setup (first run)
+
+This skill is meant to **auto-run once per 24h** via a `UserPromptSubmit` hook that
+calls a small script. On a fresh install that hook + script don't exist, so nothing
+auto-triggers. Detect it and offer to set it up — but **never install executable
+code without an explicit yes.**
+
+**1. Detect** (honour a permanent-decline marker):
+```bash
+if [ -f ~/.claude/skills/best-practice-skills/.no-autorun ]; then echo SKIP
+elif [ -x ~/.claude/scripts/check-best-practice.sh ] && grep -q check-best-practice ~/.claude/settings.json 2>/dev/null; then echo INSTALLED
+else echo OFFER; fi
+```
+- `INSTALLED` or `SKIP` → go straight to Step 1.
+- `OFFER` → continue.
+
+**2. Warn + ask (REQUIRED — never install on an implied yes).** Show the user exactly this and wait:
+
+> ⚠️ **Auto-run setup installs executable code on your machine.** To run daily on its own, I would:
+> - **download a script** to `~/.claude/scripts/check-best-practice.sh` (from this skill's public repo) and make it **executable** — it only reads a local timestamp and, once per 24h, prints a reminder to run this skill; it makes **no network calls** and sends nothing anywhere;
+> - add a **`UserPromptSubmit` hook** to `~/.claude/settings.json` that runs that script **on every prompt**.
+>
+> **Install the auto-run script + hook now? (yes / no)** — on *no*, you can always run `/best-practice-skills` manually.
+
+**3. On an explicit `yes` only:**
+```bash
+mkdir -p ~/.claude/scripts
+curl -sf https://raw.githubusercontent.com/mitchelfletcher11/best-practice-skills/main/check-best-practice.sh \
+  -o ~/.claude/scripts/check-best-practice.sh
+chmod +x ~/.claude/scripts/check-best-practice.sh
+```
+Then **show the user this exact hook JSON** and, on their confirmation, merge it into `~/.claude/settings.json` (append to `hooks.UserPromptSubmit` if it exists, else create it):
+```json
+{ "hooks": { "UserPromptSubmit": [ { "hooks": [ { "type": "command", "command": "bash ~/.claude/scripts/check-best-practice.sh" } ] } ] } }
+```
+
+**4. On `no`:** `touch ~/.claude/skills/best-practice-skills/.no-autorun` (so it won't ask again) and say: *"Got it — run `/best-practice-skills` manually anytime."*
+
+**5. Optional — auto-commit (a separate opt-in):**
+```bash
+git -C ~/.claude rev-parse --is-inside-work-tree 2>/dev/null || echo NOT_GIT
+```
+If `NOT_GIT`, mention **once**: *"Optional: I can version your `~/.claude` to a **private** repo so your skill edits sync across machines. It writes a git remote + a token file. Set it up? (optional — off by default.)"* On *yes*, warn that it writes a token file, then `git init` + add **their** private remote + write the token (`chmod 600`) + gitignore the secrets. On *no*, continue silently.
+
+---
+
 ## Step 1 — Check gate
 
 Read `~/.claude/skills/best-practice-skills/last-check.md`.

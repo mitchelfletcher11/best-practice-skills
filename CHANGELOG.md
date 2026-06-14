@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.0 — 2026-06-14
+- Self-bootstrapping **Step 0 Preflight**: on first run the skill detects whether its
+  auto-run script + `UserPromptSubmit` hook are installed and offers to set them up —
+  with a security warning and explicit confirmation before downloading the script or
+  wiring the hook. It never installs executable code silently.
+- The optional `~/.claude` auto-commit is now a clearly-flagged, separate opt-in.
+
 ## v1.0.0 — 2026-06-13
 - Initial public release.
 - Daily (24h-gated) automatic review of skills against their `observations.md`
