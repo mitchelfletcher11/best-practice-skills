@@ -57,7 +57,12 @@ Then **show the user this exact hook JSON** and, on their confirmation, merge it
 ```bash
 git -C ~/.claude rev-parse --is-inside-work-tree 2>/dev/null || echo NOT_GIT
 ```
-If `NOT_GIT`, mention **once**: *"Optional: I can version your `~/.claude` to a **private** repo so your skill edits sync across machines. It writes a git remote + a token file. Set it up? (optional — off by default.)"* On *yes*, warn that it writes a token file, then `git init` + add **their** private remote + write the token (`chmod 600`) + gitignore the secrets. On *no*, continue silently.
+If `NOT_GIT`, mention **once**: *"Optional: I can version your `~/.claude` to a **private** repo so your skill edits sync across machines. It writes a git remote + a token file. Set it up? (optional — off by default.)"* On *yes*, warn that it writes a token file, then set it up handling the **zero-state** (a first-time user may have no repo yet — never assume one):
+- `git -C ~/.claude init -b main`.
+- **Does their private repo exist?** If yes, add it as the remote. If **not** (the first-time case), create it — `gh repo create <name> --private --source ~/.claude --remote origin` when `gh` is authenticated, else point them to <https://github.com/new> (set **Private**) and add the remote. If they have no GitHub account at all, point to <https://github.com/signup> first.
+- Write the token (`chmod 600`) — create one at <https://github.com/settings/tokens> (scope `repo`) — and gitignore the secrets. (Or reuse the `git-commit-private` skill, which does exactly this bootstrap.)
+
+On *no*, continue silently.
 
 ---
 

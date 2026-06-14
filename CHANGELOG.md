@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.0 — 2026-06-14
+Optional auto-commit now handles the **zero-state**: creates the private repo (gh / web / signup) instead of assuming one already exists.
+
 ## v1.1.0 — 2026-06-14
 - Self-bootstrapping **Step 0 Preflight**: on first run the skill detects whether its
   auto-run script + `UserPromptSubmit` hook are installed and offers to set them up —
